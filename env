@@ -1,0 +1,2 @@
+export JUPYTERHUB_API_TOKEN=0070bf93ee1cdbf8e04991df652cb4da
+export JUPYTERHUB_ENDPOINT=http://127.0.0.1:8000/hub/api
