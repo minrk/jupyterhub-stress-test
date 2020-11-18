@@ -22,7 +22,7 @@ from urllib3.util import retry
 
 
 LOG_FORMAT = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
-LOG = logging.getLogger('hub-stress-test')
+LOG = logging.getLogger("hub-stress-test")
 
 # POST /users/{name}/servers can take over 10 seconds so be conservative with
 # the default timeout value.
@@ -31,7 +31,7 @@ DEFAULT_TIMEOUT = 30
 # The default timeout for waiting on a server status change (starting/stopping)
 SERVER_LIFECYCLE_TIMEOUT = 60
 
-USERNAME_PREFIX = 'hub-stress-test'
+USERNAME_PREFIX = "hub-stress-test"
 
 
 def parse_args():
@@ -42,7 +42,7 @@ def parse_args():
     # users/servers and which of those were created by this tool.
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description='''
+        description="""
 JupyterHub Stress Test
 
 The `stress-test` command will create `--count` number of fake users and
@@ -69,54 +69,79 @@ JUPYTERHUB_ENDPOINT environment variable.
 A `--dry-run` option is available for seeing what the test would look like
 without actually making any changes, for example:
 
-  JUPYTERHUB_API_TOKEN=test
-  JUPYTERHUB_ENDPOINT=http://localhost:8000/hub/api
-  python hub-stress-test.py stress-test -v --dry-run
-''')
-    parser.add_argument('-e', '--endpoint',
-                        default=os.environ.get('JUPYTERHUB_ENDPOINT'),
-                        help='The target hub API endpoint for the stress '
-                             'test. Can also be read from the '
-                             'JUPYTERHUB_ENDPOINT environment variable.')
-    parser.add_argument('-t', '--token',
-                        default=os.environ.get('JUPYTERHUB_API_TOKEN'),
-                        help='JupyterHub admin API token. Must be a token '
-                             'for an admin user in order to create other fake '
-                             'users for the scale test. Can also be read from '
-                             'the JUPYTERHUB_API_TOKEN environment variable.')
-    parser.add_argument('--dry-run', action='store_true',
-                        help='If set do not actually make API requests.')
+    JUPYTERHUB_API_TOKEN=test
+    JUPYTERHUB_ENDPOINT=http://localhost:8000/hub/api
+    python hub-stress-test.py stress-test -v --dry-run
+""",
+    )
+    parser.add_argument(
+        "-e",
+        "--endpoint",
+        default=os.environ.get("JUPYTERHUB_ENDPOINT", "http://127.0.0.1:8000/hub/api"),
+        help="The target hub API endpoint for the stress "
+        "test. Can also be read from the "
+        "JUPYTERHUB_ENDPOINT environment variable.",
+    )
+    parser.add_argument(
+        "-t",
+        "--token",
+        default=os.environ.get("JUPYTERHUB_API_TOKEN"),
+        help="JupyterHub admin API token. Must be a token "
+        "for an admin user in order to create other fake "
+        "users for the scale test. Can also be read from "
+        "the JUPYTERHUB_API_TOKEN environment variable.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="If set do not actually make API requests.",
+    )
     # Note that with nargs='?' if --log-to-file is specified but without an
     # argument value then it will be True (uses the const value) and we'll
     # generate a log file under /tmp. If --log-to-file is not specified at all
     # then it will default to False and we'll log to stdout. Otherwise if
     # --log-to-file is specified with a command line argument we'll log to that
     # file.
-    parser.add_argument('--log-to-file', nargs='?', default=False, const=True,
-                        metavar='FILEPATH',
-                        help='If set logging will be redirected to a file. If '
-                             'no FILEPATH value is provided then a '
-                             'timestamp-based log file under /tmp will be '
-                             'created. Note that if a FILEPATH value is given '
-                             'an existing file will be overwritten.')
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help='Enable verbose (debug) logging which includes '
-                             'logging API response times.')
+    parser.add_argument(
+        "--log-to-file",
+        nargs="?",
+        default=False,
+        const=True,
+        metavar="FILEPATH",
+        help="If set logging will be redirected to a file. If "
+        "no FILEPATH value is provided then a "
+        "timestamp-based log file under /tmp will be "
+        "created. Note that if a FILEPATH value is given "
+        "an existing file will be overwritten.",
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable verbose (debug) logging which includes "
+        "logging API response times.",
+    )
 
     # This parser holds arguments that need to be shared among two or more
     # subcommands but should not be top-level arguments.
-    
+
     parent_parser = argparse.ArgumentParser(add_help=False)
     parent_parser.add_argument(
-        '-k', '--keep', action='store_true',
-        help='Retain the created fake users/servers once they all created. '
-             'By default the script will scale up and then teardown. The '
-             'script can be run with --keep multiple times to build on an '
-             'existing set of fake users.'
+        "-k",
+        "--keep",
+        action="store_true",
+        help="Retain the created fake users/servers once they all created. "
+        "By default the script will scale up and then teardown. The "
+        "script can be run with --keep multiple times to build on an "
+        "existing set of fake users.",
     )
-    parent_parser.add_argument('-c', '--count', default=100, type=int,
-                               help='Number of users/servers (pods) to create '
-                                    '(default: 100).')
+    parent_parser.add_argument(
+        "-c",
+        "--count",
+        default=100,
+        type=int,
+        help="Number of users/servers (pods) to create " "(default: 100).",
+    )
 
     subparsers = parser.add_subparsers(dest="command", required=True)
     stress_parser = subparsers.add_parser("stress-test", parents=[parent_parser])
@@ -143,34 +168,40 @@ without actually making any changes, for example:
     )
 
     activity_parser = subparsers.add_parser(
-        'activity-stress-test', parents=[parent_parser]
+        "activity-stress-test", parents=[parent_parser]
     )
     activity_parser.add_argument(
-        '--workers', type=int, default=100,
-        help='Number of worker threads to create. Each thread will receive '
-             'len(users) // workers users to send updates for.'
+        "--workers",
+        type=int,
+        default=100,
+        help="Number of worker threads to create. Each thread will receive "
+        "len(users) // workers users to send updates for.",
     )
 
     # Add a standalone purge subcommand
-    subparsers.add_parser('purge')
+    subparsers.add_parser("purge")
 
     args = parser.parse_args()
     return args
 
 
 def validate(args):
-    if args.command == 'stress-test':
+    if args.command == "stress-test":
         if args.batch_size < 1:
-            raise Exception('--batch-size must be greater than 0')
+            raise Exception("--batch-size must be greater than 0")
         if args.count < 1:
-            raise Exception('--count must be greater than 0')
+            raise Exception("--count must be greater than 0")
     if args.token is None:
-        raise Exception('An API token must be provided either using --token '
-                        'or the JUPYTERHUB_API_TOKEN environment variable')
+        raise Exception(
+            "An API token must be provided either using --token "
+            "or the JUPYTERHUB_API_TOKEN environment variable"
+        )
     if args.endpoint is None:
-        raise Exception('A hub API endpoint URL must be provided either using '
-                        '--endpoint or the JUPYTERHUB_ENDPOINT environment '
-                        'variable')
+        raise Exception(
+            "A hub API endpoint URL must be provided either using "
+            "--endpoint or the JUPYTERHUB_ENDPOINT environment "
+            "variable"
+        )
 
 
 def setup_logging(verbose=False, log_to_file=False, args=None):
@@ -179,50 +210,52 @@ def setup_logging(verbose=False, log_to_file=False, args=None):
         if isinstance(log_to_file, str):  # A specific file is given so use it.
             filename = log_to_file
         else:  # --log-to-file with no arg so generate a tmp file for logging.
-            timestamp = datetime.utcnow().isoformat(timespec='seconds')
-            filename = os.path.join(
-                '/tmp', f'hub-stress-test-{timestamp}.log')
-        print(f'Redirecting logs to: {filename}')
-    logging.basicConfig(format=LOG_FORMAT, filename=filename, filemode='w')
+            timestamp = datetime.utcnow().isoformat(timespec="seconds")
+            filename = os.path.join("/tmp", f"hub-stress-test-{timestamp}.log")
+        print(f"Redirecting logs to: {filename}")
+    logging.basicConfig(format=LOG_FORMAT, filename=filename, filemode="w")
     root_logger = logging.getLogger(None)
     root_logger.setLevel(logging.INFO)
     if verbose:
         root_logger.setLevel(logging.DEBUG)
     if filename and filename.endswith(".jsonl"):
+        from pythonjsonlogger import jsonlogger
+
         formatter = jsonlogger.JsonFormatter()
-        root_logger.handlers[0].formatters = [formatter]
-    logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
+        root_logger.handlers[0].setFormatter(formatter)
+    logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 
     if log_to_file and args:
         # Log the args used to run the script for posterity.
         # Scrub the token though so we don't log it.
         args_dict = dict(vars(args))  # Make sure to copy the vars dict.
-        args_dict['token'] = '***'
-        LOG.info("Args: %s", json.dumps(args_dict, sort_keys=True))
+        args_dict["token"] = "***"
+        LOG.info("Args: %s", json.dumps(args_dict, sort_keys=True), extra=args_dict)
 
     def log_uncaught_exceptions(exc_type, exc_value, exc_traceback):
-        root_logger.critical("Uncaught exception",
-                             exc_info=(exc_type, exc_value, exc_traceback))
+        root_logger.critical(
+            "Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback)
+        )
 
     sys.excepthook = log_uncaught_exceptions
 
 
 @contextmanager
-def timer(message):
+def timer(message, **extra):
     """Context manager for measuring time"""
     start_time = time.perf_counter()
     try:
-        yield
+        yield lambda : stop_time - start_time
     finally:
         stop_time = time.perf_counter()
-        LOG.info(f"Took {stop_time - start_time:.3f} seconds to {message}")
+        LOG.info(f"Took {stop_time - start_time:.3f} seconds to {message}", extra=extra)
 
 
 def timeit(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         start_time = time.perf_counter()
-        with timer(f.__name__):
+        with timer(f.__name__) as t:
             return f(*args, **kwargs)
 
     return wrapper
@@ -237,18 +270,22 @@ def log_response_time(resp, *args, **kwargs):
     :param args: ignored
     :param kwargs: ignored
     """
-    LOG.debug('%(method)s %(url)s status:%(status)s time:%(elapsed)ss',
-              {'method': resp.request.method,
-               'url': resp.url,
-               'status': resp.status_code,
-               'elapsed': resp.elapsed.total_seconds()})
+    LOG.debug(
+        "%(method)s %(url)s status:%(status)s time:%(elapsed)ss",
+        {
+            "method": resp.request.method,
+            "url": resp.url,
+            "status": resp.status_code,
+            "elapsed": resp.elapsed.total_seconds(),
+        },
+    )
 
 
 def get_session(token, dry_run=False, pool_maxsize=100):
     if dry_run:
         return mock.create_autospec(requests.Session)
     session = requests.Session()
-    session.headers.update({'Authorization': 'token %s' % token})
+    session.headers.update({"Authorization": "token %s" % token})
     # Retry on errors that might be caused by stress testing.
     r = retry.Retry(
         backoff_factor=0.5,
@@ -257,40 +294,53 @@ def get_session(token, dry_run=False, pool_maxsize=100):
             429,  # concurrent_spawn_limit returns a 429
             503,  # if the hub container crashes we get a 503
             504,  # if the cloudflare gateway times out we get a 504
-        })
+        },
+    )
     adapter = adapters.HTTPAdapter(max_retries=r, pool_maxsize=pool_maxsize)
     session.mount("http://", adapter)
     session.mount("https://", adapter)
     if LOG.isEnabledFor(logging.DEBUG):
-        session.hooks['response'].append(log_response_time)
+        session.hooks["response"].append(log_response_time)
     return session
 
 
 def wait_for_server_to_stop(username, endpoint, session):
     count = 1
     while count <= SERVER_LIFECYCLE_TIMEOUT:
-        resp = session.get(endpoint + '/users/%s' % username)
+        resp = session.get(endpoint + "/users/%s" % username)
         if resp:
             user = resp.json()
             # When the server is stopped the servers dict should be empty.
-            if not user.get('servers') or isinstance(user, mock.Mock):
+            if not user.get("servers") or isinstance(user, mock.Mock):
                 return True
-            LOG.debug('Still waiting for server for user %s to stop, '
-                      'attempt: %d', username, count)
+            LOG.debug(
+                "Still waiting for server for user %s to stop, " "attempt: %d",
+                username,
+                count,
+            )
         elif resp.status_code == 404:
             # Was the user deleted underneath us?
-            LOG.info('Got 404 while waiting for server for user %s to '
-                     'stop: %s', username, resp.content)
+            LOG.info(
+                "Got 404 while waiting for server for user %s to " "stop: %s",
+                username,
+                resp.content,
+            )
             # Consider this good if the user is gone.
             return True
         else:
-            LOG.warning('Unexpected error while waiting for server for '
-                        'user %s to stop: %s', username, resp.content)
+            LOG.warning(
+                "Unexpected error while waiting for server for " "user %s to stop: %s",
+                username,
+                resp.content,
+            )
         time.sleep(1)
         count += 1
     else:
-        LOG.warning('Timed out waiting for server for user %s to stop after '
-                    '%d seconds', username, SERVER_LIFECYCLE_TIMEOUT)
+        LOG.warning(
+            "Timed out waiting for server for user %s to stop after " "%d seconds",
+            username,
+            SERVER_LIFECYCLE_TIMEOUT,
+        )
         return False
 
 
@@ -309,17 +359,22 @@ def stop_server(username, endpoint, session, wait=False):
         # successfully sent the stop request.
         return True
     else:
-        LOG.warning('Failed to stop server for user %s. Response status '
-                    'code: %d. Response content: %s', username,
-                    resp.status_code, resp.content)
+        LOG.warning(
+            "Failed to stop server for user %s. Response status "
+            "code: %d. Response content: %s",
+            username,
+            resp.status_code,
+            resp.content,
+        )
         return False
 
 
 @timeit
 def stop_servers(usernames, endpoint, session, batch_size):
     stopped = {}  # map of username to whether or not the server was stopped
-    LOG.debug('Stopping servers for %d users in batches of %d',
-              len(usernames), batch_size)
+    LOG.debug(
+        "Stopping servers for %d users in batches of %d", len(usernames), batch_size
+    )
     # Do this in batches in a ThreadPoolExecutor because the
     # `slow_stop_timeout` default of 10 seconds in the hub API can cause the
     # stop action to be somewhat synchronous.
@@ -350,13 +405,12 @@ def wait_for_servers_to_stop(stopped, endpoint, session):
     :param endpoint: base endpoint URL
     :param session: requests.Session instance
     """
-    LOG.debug('Waiting for servers to stop')
+    LOG.debug("Waiting for servers to stop")
     for username, was_stopped in stopped.items():
         # Only wait if we actually successfully tried to stop it.
         if was_stopped:
             # Update our tracking flag by reference.
-            stopped[username] = wait_for_server_to_stop(
-                username, endpoint, session)
+            stopped[username] = wait_for_server_to_stop(username, endpoint, session)
 
 
 @timeit
@@ -369,19 +423,25 @@ def delete_users_after_stopping_servers(stopped, endpoint, session):
     :param session: requests.Session instance
     :returns: True if all users were successfully deleted, False otherwise
     """
-    LOG.debug('Deleting users now that servers are stopped')
+    LOG.debug("Deleting users now that servers are stopped")
     success = True
     for username, was_stopped in stopped.items():
-        resp = session.delete(endpoint + '/users/%s' % username,
-                              timeout=DEFAULT_TIMEOUT)
+        resp = session.delete(
+            endpoint + "/users/%s" % username, timeout=DEFAULT_TIMEOUT
+        )
         if resp:
-            LOG.debug('Deleted user: %s', username)
+            LOG.debug("Deleted user: %s", username)
         elif resp.status_code == 404:
-            LOG.debug('User already deleted: %s', username)
+            LOG.debug("User already deleted: %s", username)
         else:
-            LOG.warning('Failed to delete user: %s. Response status code: %d. '
-                        'Response content: %s. Was the server stopped? %s',
-                        username, resp.status_code, resp.content, was_stopped)
+            LOG.warning(
+                "Failed to delete user: %s. Response status code: %d. "
+                "Response content: %s. Was the server stopped? %s",
+                username,
+                resp.status_code,
+                resp.content,
+                was_stopped,
+            )
             success = False
     return success
 
@@ -403,8 +463,9 @@ def delete_users(usernames, endpoint, session, batch_size=10):
 
 @timeit
 def create_users(count, batch_size, endpoint, session, existing_users=[]):
-    LOG.info('Start creating %d users in batches of %d at %s',
-             count, batch_size, endpoint)
+    LOG.info(
+        "Start creating %d users in batches of %d at %s", count, batch_size, endpoint
+    )
     # POST /users is a synchronous call so the timeout should be the batch size
     # or greater.
     timeout = max(batch_size, DEFAULT_TIMEOUT)
@@ -415,32 +476,34 @@ def create_users(count, batch_size, endpoint, session, existing_users=[]):
         # Batch create multiple users in a single request.
         usernames = []
         for _ in range(batch_size):
-            usernames.append('%s-%d' % (USERNAME_PREFIX, index))
+            usernames.append("%s-%d" % (USERNAME_PREFIX, index))
             index += 1
         # Maybe we should use the single user POST so we can deal with 409s
         # gracefully if we are re-running the script on a set of existing users
-        resp = session.post(endpoint + '/users', json={'usernames': usernames},
-                            timeout=timeout)
+        resp = session.post(
+            endpoint + "/users", json={"usernames": usernames}, timeout=timeout
+        )
         if resp:
-            LOG.debug('Created users: %s', usernames)
+            LOG.debug("Created users: %s", usernames)
             users.append(usernames)
         else:
-            LOG.error('Failed to create users: %s. Response status code: %d. '
-                      'Response content: %s', usernames, resp.status_code,
-                      resp.content)
+            LOG.error(
+                "Failed to create users: %s. Response status code: %d. "
+                "Response content: %s",
+                usernames,
+                resp.status_code,
+                resp.content,
+            )
             try:
                 delete_users(usernames, endpoint, session)
             except Exception:
-                LOG.warning('Failed to delete users: %s', usernames,
-                            exc_info=True)
-            raise Exception('Failed to create users.')
+                LOG.warning("Failed to delete users: %s", usernames, exc_info=True)
+            raise Exception("Failed to create users.")
     return users
 
 
 def start_server(username, endpoint, session):
-    resp = session.get(
-        endpoint + "/users/%s" % username, timeout=DEFAULT_TIMEOUT
-    )
+    resp = session.get(endpoint + "/users/%s" % username, timeout=DEFAULT_TIMEOUT)
     user_info = resp.json()
     if user_info["servers"].get(""):
         LOG.debug("Server for user %s is already running", username)
@@ -449,12 +512,16 @@ def start_server(username, endpoint, session):
         endpoint + "/users/%s/server" % username, timeout=DEFAULT_TIMEOUT
     )
     if resp:
-        LOG.debug('Server for user %s is starting', username)
+        LOG.debug("Server for user %s is starting", username)
     else:
         # Should we delete the user now? Should we stop or keep going?
-        LOG.error('Failed to create server for user: %s. '
-                  'Response status code: %d. Response content: %s',
-                  username, resp.status_code, resp.content)
+        LOG.error(
+            "Failed to create server for user: %s. "
+            "Response status code: %d. Response content: %s",
+            username,
+            resp.status_code,
+            resp.content,
+        )
 
 
 @timeit
@@ -467,10 +534,10 @@ def start_servers(users, endpoint, session):
         # the start operation is not totally asynchronous so we should be able
         # to speed this up by doing the starts concurrently. That will also be
         # more realistic to users logging on en masse during an event.
-        thread_name_prefix = f'hub-stress-test:start_servers:{index}'
+        thread_name_prefix = f"hub-stress-test:start_servers:{index}"
         with futures.ThreadPoolExecutor(
-                max_workers=len(usernames),
-                thread_name_prefix=thread_name_prefix) as executor:
+            max_workers=len(usernames), thread_name_prefix=thread_name_prefix
+        ) as executor:
             for username in usernames:
                 executor.submit(start_server, username, endpoint, session)
 
@@ -491,36 +558,51 @@ def wait_for_servers_to_start(users, endpoint, session):
         for username in usernames:
             count = 0  # start our timer
             while count < SERVER_LIFECYCLE_TIMEOUT:
-                resp = session.get(endpoint + '/users/%s' % username)
+                resp = session.get(endpoint + "/users/%s" % username)
                 if resp:
                     user = resp.json()
                     # We don't allow named servers so the user should have a
                     # single server named ''.
-                    server = user.get('servers', {}).get('', {})
-                    if server.get('ready'):
-                        LOG.debug('Server for user %s is ready after %d '
-                                  'checks', username, count + 1)
+                    server = user.get("servers", {}).get("", {})
+                    if server.get("ready"):
+                        LOG.debug(
+                            "Server for user %s is ready after %d " "checks",
+                            username,
+                            count + 1,
+                        )
                         break
-                    elif not server.get('pending'):
+                    elif not server.get("pending"):
                         # It's possible that the server failed to start and in
                         # that case we want to break the loop so we don't wait
                         # needlessly until the timeout.
-                        LOG.error('Server for user %s failed to start. Waited '
-                                  '%d seconds but the user record has no '
-                                  'pending action. Check the hub logs for '
-                                  'details. User: %s', username, count, user)
+                        LOG.error(
+                            "Server for user %s failed to start. Waited "
+                            "%d seconds but the user record has no "
+                            "pending action. Check the hub logs for "
+                            "details. User: %s",
+                            username,
+                            count,
+                            user,
+                        )
                         break
                 else:
-                    LOG.warning('Failed to get user: %s. Response status '
-                                'code: %d. Response content: %s', username,
-                                resp.status_code, resp.content)
+                    LOG.warning(
+                        "Failed to get user: %s. Response status "
+                        "code: %d. Response content: %s",
+                        username,
+                        resp.status_code,
+                        resp.content,
+                    )
                 time.sleep(1)
                 count += 1
             else:
                 # Should we fail here?
-                LOG.error('Timed out waiting for server for user %s to be '
-                          'ready after %d seconds', username,
-                          SERVER_LIFECYCLE_TIMEOUT)
+                LOG.error(
+                    "Timed out waiting for server for user %s to be "
+                    "ready after %d seconds",
+                    username,
+                    SERVER_LIFECYCLE_TIMEOUT,
+                )
 
 
 @timeit
@@ -542,15 +624,15 @@ def find_existing_stress_test_users(endpoint, session, state=None):
         if users:
             users = sorted(
                 filter(lambda user: user["name"].startswith(USERNAME_PREFIX), users),
-                key=lambda user: int(user["name"][len(USERNAME_PREFIX) + 1:])
+                key=lambda user: int(user["name"][len(USERNAME_PREFIX) + 1 :]),
             )
             LOG.debug("Found %d existing hub-stress-test users", len(users))
         return users
     else:
         # If the token is bad then we want to bail.
         if resp.status_code == 403:
-            raise Exception('Invalid token')
-        LOG.warning('Failed to list existing users: %s', resp.content)
+            raise Exception("Invalid token")
+        LOG.warning("Failed to list existing users: %s", resp.content)
         return []
 
 
@@ -577,29 +659,37 @@ def run_stress_test(count, batch_size, token, endpoint, dry_run=False, keep=Fals
     if not keep:
         # Flatten the list of lists so we delete all users in a single run.
         usernames = [username for usernames in users for username in usernames]
-        LOG.info('Deleting %d users', len(usernames))
+        LOG.info("Deleting %d users", len(usernames))
         if not delete_users(usernames, endpoint, session, batch_size):
-            raise Exception('Failed to delete all users')
+            raise Exception("Failed to delete all users")
 
 
 def fetch_users(endpoint, session, state=None):
-  """GET /api/users for performance-measurement purposes
-  
-  :param endpoint: base endpoint URL
-  :param session: requests.Session instance
-  :returns: Response object (avoids timers including parsing-time)
-  """
-  # This could be a lot of users so make the timeout conservative.
-  url = endpoint + "/users"
-  if state:
-      url += f"?state={state}"
-  resp = session.get(url, timeout=120)
-  resp.raise_for_status()
-  return resp
+    """GET /api/users for performance-measurement purposes
+
+    :param endpoint: base endpoint URL
+    :param session: requests.Session instance
+    :returns: Response object (avoids timers including parsing-time)
+    """
+    # This could be a lot of users so make the timeout conservative.
+    url = endpoint + "/users"
+    if state:
+        url += f"?state={state}"
+    resp = session.get(url, timeout=120)
+    resp.raise_for_status()
+    return resp
+
 
 @timeit
 def run_user_list_test(
-    total_count, active_count, batch_size, token, endpoint, samples=1, dry_run=False, keep=False
+    total_count,
+    active_count,
+    batch_size,
+    token,
+    endpoint,
+    samples=10,
+    dry_run=False,
+    keep=False,
 ):
     session = get_session(token, dry_run=dry_run)
     if active_count > total_count:
@@ -612,8 +702,10 @@ def run_user_list_test(
     existing_users = find_existing_stress_test_users(endpoint, session)
     # Create the users in batches.
     new_user_count = max(total_count - len(existing_users), 0)
-    LOG.info(f"Have {len(existing_users)}/{total_count}, creating {new_user_count} more")
-    
+    LOG.info(
+        f"Have {len(existing_users)}/{total_count}, creating {new_user_count} more"
+    )
+
     # collect existing users into batches,
     # as if they were created by create_users
     users = []
@@ -651,27 +743,34 @@ def run_user_list_test(
     wait_for_servers_to_start(active_users, endpoint, session)
     # If we don't need to keep the users/servers then remove them.
     
+    log_extra = {
+        "total": total_count,
+        "active": active_count,
+        "test": "user_list_test",
+    }
     for _ in range(samples):
-    
-        with timer("find all users"):
+
+        with timer("find all users") as t:
             r = fetch_users(endpoint, session)
         all_users = r.json()
-        LOG.info(f"Found {len(all_users)} total users")
-    
+        extra = {
+            "state": "all",
+            "time": t(),
+            "found": len(all_users),
+        }
+        extra.update(log_extra)
+        LOG.info(f"Found {len(all_users)} total users", extra=extra)
+
         with timer("find active users"):
-            r = fetch_users(
-                endpoint, session, state="active"
-            )
+            r = fetch_users(endpoint, session, state="active")
         active_users = r.json()
         LOG.info(f"Found {len(active_users)} active users")
-    
+
         with timer("find inactive users"):
-            r = fetch_users(
-                endpoint, session, state="inactive"
-            )
+            r = fetch_users(endpoint, session, state="inactive")
         inactive_users = r.json()
         LOG.info(f"Found {len(inactive_users)} inactive users")
-    
+
         with timer("find ready users"):
             r = fetch_users(endpoint, session, state="ready")
         ready_users = r.json()
@@ -690,15 +789,14 @@ def purge_users(token, endpoint, dry_run=False):
     session = get_session(token, dry_run=dry_run)
     users = find_existing_stress_test_users(endpoint, session)
     if users:
-        usernames = [user['name'] for user in users]
-        LOG.info('Deleting %d users', len(usernames))
+        usernames = [user["name"] for user in users]
+        LOG.info("Deleting %d users", len(usernames))
         if not delete_users(usernames, endpoint, session):
-            raise Exception('Failed to delete all users')
+            raise Exception("Failed to delete all users")
 
 
 @timeit
-def notebook_activity_test(count, token, endpoint, workers, keep=False,
-                           dry_run=False):
+def notebook_activity_test(count, token, endpoint, workers, keep=False, dry_run=False):
     if count < workers:
         workers = count
     session = get_session(token=token, dry_run=dry_run, pool_maxsize=workers)
@@ -707,13 +805,14 @@ def notebook_activity_test(count, token, endpoint, workers, keep=False,
     # that will determine our starting index for names.
     existing_users = find_existing_stress_test_users(endpoint, session)
 
-    usernames = [user['name'] for user in existing_users]
+    usernames = [user["name"] for user in existing_users]
 
     # Create the missing users.
     to_create = count - len(existing_users)
     if to_create > 0:
-        users = create_users(to_create, to_create, endpoint, session,
-                             existing_users=existing_users)
+        users = create_users(
+            to_create, to_create, endpoint, session, existing_users=existing_users
+        )
         usernames.extend([name for usernames in users for name in usernames])
 
     def send_activity(users, endpoint, session):
@@ -731,8 +830,7 @@ def notebook_activity_test(count, token, endpoint, workers, keep=False,
         for username in users:
             time.sleep(random.random())
             url = "{}/users/{}/activity".format(endpoint, username)
-            resp = session.post(
-                url, data=json.dumps(body), timeout=DEFAULT_TIMEOUT)
+            resp = session.post(url, data=json.dumps(body), timeout=DEFAULT_TIMEOUT)
             total_time = 1 if dry_run else resp.elapsed.total_seconds()
             times.append(total_time)
             LOG.debug("Sent activity for user %s (%f)", username, total_time)
@@ -741,7 +839,7 @@ def notebook_activity_test(count, token, endpoint, workers, keep=False,
 
     def chunk(users, n):
         for i in range(0, len(users), n):
-            yield users[i:i + n]
+            yield users[i : i + n]
 
     # STOP_PING is used to control the ping_hub function.
     STOP_PING = False
@@ -787,8 +885,12 @@ def notebook_activity_test(count, token, endpoint, workers, keep=False,
         STOP_PING = True
 
     avg = sum(times) / len(times)
-    LOG.info("Time to POST activity update: average=%f, min=%f, max=%f",
-             avg, min(times), max(times))
+    LOG.info(
+        "Time to POST activity update: average=%f, min=%f, max=%f",
+        avg,
+        min(times),
+        max(times),
+    )
 
     if not keep:
         delete_users(usernames, endpoint, session)
@@ -796,8 +898,7 @@ def notebook_activity_test(count, token, endpoint, workers, keep=False,
 
 def main():
     args = parse_args()
-    setup_logging(verbose=args.verbose, log_to_file=args.log_to_file,
-                  args=args)
+    setup_logging(verbose=args.verbose, log_to_file=args.log_to_file, args=args)
     try:
         validate(args)
     except Exception as e:
@@ -805,7 +906,7 @@ def main():
         sys.exit(1)
 
     try:
-        if args.command == 'purge':
+        if args.command == "purge":
             purge_users(args.token, args.endpoint, dry_run=args.dry_run)
         elif args.command == "stress-test":
             run_stress_test(

@@ -38,7 +38,7 @@ def main():
         print(total_count, list(active_counts(total_count, limit=1000)))
         for active_count in active_counts(total_count, limit=1000):
             print(f"Running test with {active_count}/{total_count}")
-            log_file = f"{total_count:05}-{active_count:05}.txt"
+            log_file = f"{total_count:05}-{active_count:05}.jsonl"
             p = run(
                 [
                     sys.executable,
