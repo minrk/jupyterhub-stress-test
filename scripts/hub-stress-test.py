@@ -475,10 +475,12 @@ def create_users(count, batch_size, endpoint, session, existing_users=[]):
     num_existing_users = len(existing_users)
     index = num_existing_users + 1
     users = []  # Keep track of the batches to create servers.
-    while index <= count + num_existing_users:
+    total = count + num_existing_users
+    while index <= total:
         # Batch create multiple users in a single request.
         usernames = []
-        for _ in range(batch_size):
+        remaining = 1 + total - index
+        for _ in range(min(batch_size, remaining)):
             usernames.append("%s-%d" % (USERNAME_PREFIX, index))
             index += 1
         # Maybe we should use the single user POST so we can deal with 409s
