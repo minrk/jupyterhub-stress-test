@@ -31,10 +31,9 @@ def active_counts(total_count, limit=None):
                 return
         multiplier *= 10
 
-
 def main():
     run([sys.executable, hub_stress_test, "purge"], check=True)
-    for total_count in [0, 10, 100, 200, 500, 1000, 2000, 5000, 10000]:
+    for total_count in [0, 10, 100, 200, 500, 1000, 2000, 5000, 10000, 20000]:
         print(total_count, list(active_counts(total_count, limit=1000)))
         for active_count in active_counts(total_count, limit=1000):
             print(f"Running test with {active_count}/{total_count}")
