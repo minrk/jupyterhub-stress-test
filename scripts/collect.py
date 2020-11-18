@@ -59,7 +59,7 @@ def main():
                 with open(log_file) as f:
                     sys.stderr.write(f.read())
                 sys.exit(1)
-        run([sys.executable, hub_stress_test, "purge"], check=True)
+        run([sys.executable, hub_stress_test, "stop"], check=True)
 
 
 if __name__ == "__main__":

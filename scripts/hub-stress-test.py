@@ -181,6 +181,9 @@ without actually making any changes, for example:
     # Add a standalone purge subcommand
     subparsers.add_parser("purge")
 
+    # Add a standalone purge subcommand
+    subparsers.add_parser("stop")
+
     args = parser.parse_args()
     return args
 
@@ -794,6 +797,21 @@ def purge_users(token, endpoint, dry_run=False):
         if not delete_users(usernames, endpoint, session):
             raise Exception("Failed to delete all users")
 
+@timeit
+def stop_users(token, endpoint, batch_size=20, dry_run=False):
+    session = get_session(token, dry_run=dry_run)
+    users = find_existing_stress_test_users(endpoint, session)
+    if users:
+        usernames = [user["name"] for user in users]
+        LOG.info("Stopping servers for %d users", len(usernames))
+        # Do this in batches by first explicitly stopping all of the servers since
+        # that could be asynchronous, then wait for the servers to be stopped and
+        # then finally delete the users.
+        stopped = stop_servers(usernames, endpoint, session, batch_size)
+        
+        # Now wait for the servers to be stopped. With a big list the ones at the
+        # end should be done by the time we get to them.
+        wait_for_servers_to_stop(stopped, endpoint, session)
 
 @timeit
 def notebook_activity_test(count, token, endpoint, workers, keep=False, dry_run=False):
@@ -908,6 +926,8 @@ def main():
     try:
         if args.command == "purge":
             purge_users(args.token, args.endpoint, dry_run=args.dry_run)
+        if args.command == "stop":
+            stop_users(args.token, args.endpoint, dry_run=args.dry_run)
         elif args.command == "stress-test":
             run_stress_test(
                 args.count,

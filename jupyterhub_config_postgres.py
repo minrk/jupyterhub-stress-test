@@ -15,6 +15,6 @@ c.JupyterHub.services = [
 ]
 
 # use postgres
-postgres_user = os.environ["POSTGRES_USER"]
-postgres_password = os.environ["POSTGRES_PASSWORD"]
+postgres_user = os.environ["PGUSER"]
+postgres_password = os.environ["PGPASSWORD"]
 c.JupyterHub.db_url = f"postgresql://{postgres_user}:{postgres_password}@127.0.0.1/"
