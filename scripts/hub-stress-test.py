@@ -754,32 +754,21 @@ def run_user_list_test(
         "test": "user_list_test",
     }
     for _ in range(samples):
-
-        with timer("find all users") as t:
-            r = fetch_users(endpoint, session)
-        all_users = r.json()
-        extra = {
-            "state": "all",
-            "time": t(),
-            "found": len(all_users),
-        }
-        extra.update(log_extra)
-        LOG.info(f"Found {len(all_users)} total users", extra=extra)
-
-        with timer("find active users"):
-            r = fetch_users(endpoint, session, state="active")
-        active_users = r.json()
-        LOG.info(f"Found {len(active_users)} active users")
-
-        with timer("find inactive users"):
-            r = fetch_users(endpoint, session, state="inactive")
-        inactive_users = r.json()
-        LOG.info(f"Found {len(inactive_users)} inactive users")
-
-        with timer("find ready users"):
-            r = fetch_users(endpoint, session, state="ready")
-        ready_users = r.json()
-        LOG.info(f"Found {len(ready_users)} ready users")
+        for state in ("all", "active", "inactive", "ready"):
+            state_arg = state
+            if state == "all":
+                state_arg = None
+                
+            with timer(f"find {state} users") as t:
+                r = fetch_users(endpoint, session, state=state_arg)
+            found_users = r.json()
+            extra = {
+                "state": state,
+                "time": t(),
+                "found": len(found_users),
+            }
+            extra.update(log_extra)
+            LOG.info(f"Found {len(found_users)} {state} users", extra=extra)
 
     if not keep:
         # Flatten the list of lists so we delete all users in a single run.
