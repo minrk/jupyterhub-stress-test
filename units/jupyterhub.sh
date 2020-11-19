@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-
 source /io/venv/bin/activate
 source /io/repo/env
+
+set -ex
 
 if [[ "$@" == *postgres* ]]; then
   # reset docker db

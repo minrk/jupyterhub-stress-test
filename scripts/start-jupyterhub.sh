@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
+set -ex
 sudo systemctl stop jupyterhub
 sudo systemctl stop jupyterhub-postgres
 
-sudo systemctl start "${1:-jupyterhub}"
+unit="${1:-jupyterhub}"
+sudo systemctl start "${unit}"
+sudo systemctl status "${unit}"

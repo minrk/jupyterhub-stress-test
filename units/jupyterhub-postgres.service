@@ -1,7 +1,7 @@
 [Unit]
-Description=Jupyterhub
+Description=JupyterHub (postgres)
 
 [Service]
 User=root
-ExecStart=/io/repo/scripts/start-jupyterhub.sh -f /io/repo/jupyterhub_config_postgres.py
+ExecStart=/io/repo/units/jupyterhub.sh -f /io/repo/jupyterhub_config_postgres.py
 WorkingDirectory=/tmp
