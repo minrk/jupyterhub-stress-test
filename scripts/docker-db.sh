@@ -4,7 +4,7 @@
 
 # simplified
 set -eu
-
+source "$(dirname $0)/../env"
 export PGHOST=127.0.0.1
 NAME="hub-test-db"
 DOCKER_RUN="docker run -d --name $NAME"
