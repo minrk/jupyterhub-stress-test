@@ -1,0 +1,7 @@
+[Unit]
+Description=Jupyterhub
+
+[Service]
+User=root
+ExecStart=/io/repo/scripts/start-jupyterhub.sh -f jupyterhub_config.py
+WorkingDirectory=/tmp
