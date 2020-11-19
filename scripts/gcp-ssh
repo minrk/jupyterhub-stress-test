@@ -1,0 +1,9 @@
+#!/bin/sh
+# rsync ssh executable from https://stackoverflow.com/a/48105694
+if [[ ! -z "$GCP_ZONE" ]]; then
+   zone_arg="--zone $GCP_ZONE"
+fi
+host="$1"
+
+shift
+exec gcloud compute ssh $zone_arg "$host" -- "$@"
