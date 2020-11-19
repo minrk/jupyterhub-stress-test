@@ -1,3 +1,7 @@
 requests
 jupyterhub
 psycopg2-binary
+
+# for analysis, e.g. on binder
+pandas
+altair
