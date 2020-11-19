@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-cat << EOF > /etc/profile.d/venv.sh
+cat <<- "EOF" > /etc/profile.d/venv.sh
 test -d /io/venv && source /io/venv/bin/activate
 test -f /io/repo/env && source /io/repo/env
+export PATH=/io/repo/scripts:$PATH
 EOF
 
 sudo apt update
