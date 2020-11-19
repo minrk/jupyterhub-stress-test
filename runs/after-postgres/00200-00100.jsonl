@@ -1,0 +1,89 @@
+{"message": "Args: {\"batch_size\": 20, \"command\": \"user-stress-test\", \"count\": 100, \"dry_run\": false, \"endpoint\": \"http://127.0.0.1:8000/hub/api\", \"keep\": true, \"log_to_file\": \"00200-00100.jsonl\", \"token\": \"***\", \"total_count\": 200, \"verbose\": false}", "endpoint": "http://127.0.0.1:8000/hub/api", "token": "***", "dry_run": false, "log_to_file": "00200-00100.jsonl", "verbose": false, "command": "user-stress-test", "keep": true, "count": 100, "batch_size": 20, "total_count": 200}
+{"message": "Took 0.021 seconds to find_existing_stress_test_users"}
+{"message": "Have 200/200, creating 0 more"}
+{"message": "Starting 100 notebook servers"}
+{"message": "Took 3.617 seconds to start_servers"}
+{"message": "start done"}
+{"message": "Waiting for 100 notebook servers to be ready"}
+{"message": "Took 0.895 seconds to wait_for_servers_to_start"}
+{"message": "Took 0.016 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.016238769999972646, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.01379997000003641, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.012 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.011511604999896008, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.014486636999890834, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.015371467000022676, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.013516901999992115, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.011 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.011135324000179025, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.014393692999874474, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.016 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.016021006000073612, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.013706477000141604, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.011 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.011320608999994874, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.014301025000122536, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.01540888499994253, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.013640944999906424, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.011 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.011239283000122668, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.014677174999860654, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.015432649000103993, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.013670154999999795, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.011 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.011309079000056954, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.014264979000017775, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.016 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.015541817999974228, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.013 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.013460576999932528, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.011 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.010994762999871455, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.016 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.015845654000031573, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.017 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.01651328899993132, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.013 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.013371231999826705, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.011 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.010938469999928202, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.014 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.014196985999888057, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.016 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.015946675999884974, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.015047339000147986, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.012 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.01204880599993885, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.015401297000153136, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.017 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.016920355999900494, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.014599214999861942, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.012 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.011897558000100616, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.01474715299991658, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.016 seconds to find all users"}
+{"message": "Found 200 all users", "state": "all", "time": 0.015860068999927535, "found": 200, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find active users"}
+{"message": "Found 100 active users", "state": "active", "time": 0.014520533999984764, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.012 seconds to find inactive users"}
+{"message": "Found 100 inactive users", "state": "inactive", "time": 0.011628563999920516, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 0.015 seconds to find ready users"}
+{"message": "Found 100 ready users", "state": "ready", "time": 0.014711113000203113, "found": 100, "total": 200, "active": 100, "test": "user_list_test"}
+{"message": "Took 5.121 seconds to run_user_list_test"}
