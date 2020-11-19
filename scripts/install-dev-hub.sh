@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source ~/venv/bin/activate
+source /io/venv/bin/activate
 cd /tmp
 git clone https://github.com/jupyterhub/jupyterhub
 cd jupyterhub

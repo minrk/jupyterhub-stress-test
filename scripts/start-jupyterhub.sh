@@ -1,10 +1,5 @@
-source /io/venv/bin/activate
-source /io/.env
-if [[ "$@" == *postgres* ]]; then
-  # reset docker db
-  bash /io/docker-db.sh
-fi
-# clear sqlite before starting
-test -f jupyterhub.sqlite && rm -vf jupyterhub.sqlite
+#!/usr/bin/env bash
+sudo systemctl stop jupyterhub
+sudo systemctl stop jupyterhub-postgres
 
-exec jupyterhub "$@"
+sudo systemctl start "${1:-jupyterhub}"
