@@ -4,6 +4,13 @@ cat <<- "EOF" > /etc/profile.d/venv.sh
 test -d /io/venv && source /io/venv/bin/activate
 test -f /io/repo/env && source /io/repo/env
 export PATH=/io/repo/scripts:$PATH
+test -d /io/repo && ( \
+    sudo chown -R $(whoami) /io \
+    && cd /io/repo \
+    && git pull \
+)
+test -d /io/runs || mkdir /io/runs
+cd /io/runs
 EOF
 
 sudo apt update
