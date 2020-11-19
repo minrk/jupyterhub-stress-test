@@ -2,6 +2,7 @@
 
 cat << EOF > /etc/profile.d/venv.sh
 test -d /io/venv && source /io/venv/bin/activate
+test -f /io/repo/env && source /io/repo/env
 EOF
 
 sudo apt update
