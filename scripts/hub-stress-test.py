@@ -768,7 +768,7 @@ def run_user_list_test(
                 "found": len(found_users),
             }
             extra.update(log_extra)
-            LOG.info(f"Found {len(found_users)} {state} users", extra=extra)
+            LOG.info(f"Found {len(found_users)} {state} users", extra=extra.copy())
 
     if not keep:
         # Flatten the list of lists so we delete all users in a single run.
